@@ -2,7 +2,7 @@ import os
 import requests
 
 def run_writer():
-    print("✍️ [KDP執筆・編集部門] 小説本文の執筆および自動リライト・編集チェックを開始...")
+    print("✍️ [KDP Writing Dept] Writing Chapter 1 in English with auto-editing/debugging...")
     api_key = os.environ.get("GEMINI_API_KEY")
     
     blueprint_path = "kdp_novels/workspace/02_plot_blueprint.md"
@@ -12,18 +12,19 @@ def run_writer():
             blueprint_context = f.read()
 
     if not api_key:
-        print("⚠️ APIキー未設定のため、原稿のサンプルを配置します。")
+        print("⚠️ API Key not found. Generating default English chapter...")
         write_demo_manuscript()
         return
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     
     prompt = f"""
-以下のキャラクター設定、エンディング構想、およびSave the Catストーリーライン概要を元に、Amazon KDP出版用の小説の「第1章」を圧倒的な描写力で執筆してください。
-また、執筆した後に自分で読み返し、誤字脱字や矛盾点がないかをセルフチェックした最終完成原稿を出力してください。
-
-【小説設計図】
+Using the following character profiles, chosen ending, and Save the Cat storyline blueprint:
 {blueprint_context}
+
+Write "Chapter 1" of this novel in English. 
+Ensure the writing style is highly immersive, filled with deep sensory details, emotional tension, and compelling dialogue that matches the highest-selling US fiction on Amazon KDP.
+After writing the chapter, perform an automatic self-review to correct any typos, grammatical errors, or plot inconsistencies, and output the polished, final version of Chapter 1.
 """
 
     try:
@@ -32,18 +33,18 @@ def run_writer():
             result = response.json()["candidates"][0]["content"]["parts"][0]["text"]
             with open("kdp_novels/workspace/03_novel_manuscript.md", "w", encoding="utf-8") as f:
                 f.write(result)
-            print("✅ 小説第1章の執筆と校正・編集デバッグが完了しました。")
+            print("✅ Chapter 1 successfully written and edited in English.")
         else:
             write_demo_manuscript()
     except Exception as e:
-        print(f"エラー: {e}")
+        print(f"Error during writing API call: {e}")
         write_demo_manuscript()
 
 def write_demo_manuscript():
-    demo = """# 📚 小説原稿：『わたしは、謎を解いていなかった』
-## 第1章：本の背表紙と、静かなる波紋
-カウンターに置かれた本の返却期限は、三日過ぎていた。谷口静は、指先でその古い背表紙をなぞる。
-「空気が読めない」と人は言う。しかし、静にとって世界は情報に満ち溢れていた。貸出カードのインクの滲み、挟まれた付箋の折り目……。
+    demo = """# 📚 Novel Manuscript: Elena's Rebirth
+## Chapter 1: The Cold Rain of Silver Creek
+The rain of Silver Creek always tasted like old metal. 
+Elena pulled her tattered cloak tighter around her shoulders, keeping her gaze locked firmly on the muddy path. She could hear the howling of the pack in the distance—the annual Blue Moon Festival had begun, but she was not invited. She was the pack's ghost.
 """
     with open("kdp_novels/workspace/03_novel_manuscript.md", "w", encoding="utf-8") as f:
         f.write(demo)
