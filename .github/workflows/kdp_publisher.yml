@@ -1,0 +1,67 @@
+name: 📚 KDP Novel Publisher System
+
+on:
+  schedule:
+    # 1日3回自動実行（UTC 22:00, 05:00, 12:00 => 日本時間 7:00, 14:00, 21:00）
+    - cron: '0 22,5,12 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '実行モードを選択してください'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'research_only'
+          - 'write_only'
+
+jobs:
+  run-kdp-publishing:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    # 🕵️‍♂️ Step 1: 市場リサーチエージェント
+    - name: Run Market Researcher
+      if: ${{ github.event.inputs.mode == 'all' || github.event.inputs.mode == 'research_only' }}
+      env:
+        GEMINI_API_KEY: ${{ secrets.KDP_GEMINI_API_KEY }}
+      run: |
+        if [ -f "kdp_novels/agents/market_researcher.py" ]; then
+          python kdp_novels/agents/market_researcher.py
+        else
+          echo "ファイルが見つかりません"
+        fi
+
+    # 📐 Step 2 & 3 & 4: プロット設計、執筆、SEOマーケティング
+    - name: Run Plot, Writer & Marketing Agents
+      if: ${{ github.event.inputs.mode == 'all' || github.event.inputs.mode == 'write_only' }}
+      env:
+        GEMINI_API_KEY: ${{ secrets.KDP_GEMINI_API_KEY }}
+      run: |
+        echo "=== プロット設計・小説執筆・SEOメタ生成を一挙実行 ==="
+        [ -f "kdp_novels/agents/plot_designer.py" ] && python kdp_novels/agents/plot_designer.py
+        [ -f "kdp_novels/agents/novel_writer.py" ] && python kdp_novels/agents/novel_writer.py
+        [ -f "kdp_novels/agents/seo_marketer.py" ] && python kdp_novels/agents/seo_marketer.py
+
+    # 📦 成果物（リサーチ結果・小説原稿・SEO文章）を自動コミット＆プッシュ
+    - name: Commit and Push Novel Assets
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add kdp_novels/workspace/ || echo "変更なし"
+        git commit -m "📚 [KDP出版部門] 最新の市場リサーチ、プロット、小説原稿、およびSEOメタデータを格納しました" || echo "変更なし"
+        git push
