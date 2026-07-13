@@ -1,15 +1,16 @@
-# 💰 Amazon KDP配信用 SEO最適化データ
-## 書籍タイトル案
-『わたしは、謎を解いていなかった：発達障害グレーゾーン司書・谷口静の静かなる観察眼』
+# 💰 Amazon US KDP SEO Metadata
+## Book Title Option
+"The Alpha's Regret: A Rejected Mate Romance (Silver Creek Shifters Book 1)"
 
-## 書籍説明文（Amazon商品ページ用）
-「また、ズレてる。でも、あなたの嘘だけは痛いほど見えてしまう――」
+## Compelling Book Description (HTML ready for KDP)
+"Elena, you are nothing but a weak, mateless omega. I reject you."
 
-空気が読めない、他人の感情の機微がわからない。そう言われ続けてきた42歳の図書館司書・谷口静。
-しかし彼らが残した一筋のメモ、本の貸出履歴の奇妙な並びは、静の圧倒的な観察眼の前で「誰かの小さな困りごと」となって浮き彫りになる……。
+With those words, Alpha Nicholas shattered Elena's world, leaving her to die in the freezing rain. But he didn't know one thing... she was carrying a secret that would rewrite the laws of the wolf packs forever.
 
-【本書のキーワード】
-- 日常系ミステリー
-- 発達障害 / グレーゾーン
-- 大人の生きづらさと共感
-- どんでん返し
+Three years later, Elena returns—no longer weak, and definitely no longer his. But Nicholas is now desperate to claim her. Will he survive her vengeance?
+
+### What's inside this book:
+- ✔️ Rejected Mate Romance
+- ✔️ Second Chance Bond
+- ✔️ Domineering Alpha & Secret Bloodline
+- ✔️ Page-turning Emotional Angst

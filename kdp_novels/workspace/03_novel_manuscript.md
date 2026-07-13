@@ -1,4 +1,4 @@
-# 📚 小説原稿：『わたしは、謎を解いていなかった』
-## 第1章：本の背表紙と、静かなる波紋
-カウンターに置かれた本の返却期限は、三日過ぎていた。谷口静は、指先でその古い背表紙をなぞる。
-「空気が読めない」と人は言う。しかし、静にとって世界は情報に満ち溢れていた。貸出カードのインクの滲み、挟まれた付箋の折り目……。
+# 📚 Novel Manuscript: Elena's Rebirth
+## Chapter 1: The Cold Rain of Silver Creek
+The rain of Silver Creek always tasted like old metal. 
+Elena pulled her tattered cloak tighter around her shoulders, keeping her gaze locked firmly on the muddy path. She could hear the howling of the pack in the distance—the annual Blue Moon Festival had begun, but she was not invited. She was the pack's ghost.
