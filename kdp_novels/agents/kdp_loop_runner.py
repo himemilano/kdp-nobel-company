@@ -7,21 +7,22 @@ from datetime import datetime, timedelta, timezone
 # 日本時間設定
 jst = timezone(timedelta(hours=9))
 
-# 📚 小説生成プロセスの5大エージェントを自動巡回
+# 実行ターゲット：kdp_novels/agents/ 直下の5大エージェント（相対パスを完全に適合させています）
 SCRIPTS_TO_RUN = [
-    "kdp_novels/agents/market_researcher.py",         # 1. 市場調査・トレンド分析
-    "kdp_novels/agents/plot_designer.py",             # 2. プロット・キャラクター設計
-    "kdp_novels/agents/novel_writer.py",              # 3. 本文の執筆・自動生成
-    "kdp_novels/agents/seo_marketer.py",              # 4. タイトル・紹介文・SEO設計
-    "kdp_novels/agents/legal_compliance_checker.py"   # 5. 法的規約・重複チェック
+    "kdp_novels/agents/market_researcher.py",         # 1. 市場調査
+    "kdp_novels/agents/plot_designer.py",             # 2. プロット設計
+    "kdp_novels/agents/novel_writer.py",              # 3. 本文執筆
+    "kdp_novels/agents/seo_marketer.py",              # 4. タイトル・紹介文
+    "kdp_novels/agents/legal_compliance_checker.py"   # 5. 重複・規約チェック
 ]
 
-# APIリミットセーフガード (1分間の最大リクエスト数を12回に自主規制してエラーを回避)
+# APIリミットセーフガード (1分間の最大リクエスト数12回：約5秒に1回の間隔)
 MAX_REQUESTS_PER_MINUTE = 12
-REQUEST_INTERVAL = 60 / MAX_REQUESTS_PER_MINUTE # 5秒インターバル
+REQUEST_INTERVAL = 60 / MAX_REQUESTS_PER_MINUTE
 
 def run_script_safely(script_path):
     if not os.path.exists(script_path):
+        print(f"⚠️ スクリプトが見つかりません: {script_path} (スキップします)")
         return False
         
     current_time = datetime.now(jst).strftime("%H:%M:%S")
@@ -29,7 +30,7 @@ def run_script_safely(script_path):
     
     start_time = time.time()
     try:
-        # エージェントスクリプトを外部プロセスとして起動
+        # プロセスとしてエージェントを順次起動
         result = subprocess.run([sys.executable, script_path], capture_output=True, text=True, timeout=300)
         
         print(result.stdout)
@@ -39,11 +40,11 @@ def run_script_safely(script_path):
         elapsed = time.time() - start_time
         print(f"⏱️ 完了 (処理時間: {elapsed:.1f}秒)")
         
-        # API安全マージン待機
+        # API保護待機
         time.sleep(REQUEST_INTERVAL)
         return True
     except subprocess.TimeoutExpired:
-        print(f"⚠️ タイムアウト(5分超過により強制打ち切り): {script_path}")
+        print(f"⚠️ 5分以上応答がないためタイムアウトしました: {script_path}")
         return False
     except Exception as e:
         print(f"❌ 実行エラー: {e}")
@@ -61,20 +62,20 @@ def main():
     while True:
         elapsed_total = time.time() - loop_start_time
         if elapsed_total > max_loop_duration:
-            print("⏳ GitHub Actionsの制限（6時間）に近いため、次の枠へループをバトンタッチします。")
+            print("⏳ コンテナ制限時間に達したため、次の枠へループをバトンタッチします。")
             break
             
         run_count += 1
         print(f"\n--- 📚 第 {run_count} 回目の小説生成・市場監視ループ ---")
         
-        # 登録エージェントを順次実行
+        # 5つのエージェントを順に実行
         for script in SCRIPTS_TO_RUN:
             run_script_safely(script)
             
-        # 執筆負荷を考慮して30秒息抜き
+        # 1サイクル完了ごとに30秒待機
         time.sleep(30)
         
-        # 出来上がった小説のプロット、執筆原稿（workspace等）をGitHubに自律プッシュ
+        # workspaceフォルダ等に生成された最新原稿（マークダウンなど）を検知してGitHubへプッシュ
         try:
             subprocess.run(["git", "config", "--local", "user.email", "action@github.com"], capture_output=True)
             subprocess.run(["git", "config", "--local", "user.name", "GitHub Action"], capture_output=True)
@@ -82,8 +83,8 @@ def main():
             
             status_res = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
             if status_res.stdout.strip():
-                print("📦 新規書き下ろし原稿の更新を検知！自動でコミット・プッシュします...")
-                subprocess.run(["git", "commit", "-m", "📚 [KDP-Autonomy] 小説原稿の最新執筆パートを自律格納しました"], capture_output=True)
+                print("📦 新規小説原稿・報告書の書き出しを検知！自動でコミット・プッシュします...")
+                subprocess.run(["git", "commit", "-m", "📚 [KDP-Autonomy] 24時間自律ループにより最新小説原稿を自動プッシュ"], capture_output=True)
                 subprocess.run(["git", "push"], capture_output=True)
         except Exception as e:
             print(f"⚠️ 自動コミット例外: {e}")
