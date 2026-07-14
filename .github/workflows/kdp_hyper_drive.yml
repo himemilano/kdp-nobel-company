@@ -2,17 +2,17 @@ name: 📚 KDP Publisher Hyper-Drive Loop
 
 on:
   schedule:
-    # 毎時0分にトリガー（常時コンテナを起動し続けて、ループを維持します）
+    # 毎時0分に起動して常時コンテナを維持
     - cron: '0 * * * *'
   workflow_dispatch: # 手動即時起動ボタン
 
 permissions:
-  contents: write # 生成された小説原稿をGitHubへ自動コミットする権限
+  contents: write # 成果物の自動コミット・プッシュ権限
 
 jobs:
   run-kdp-limitless:
     runs-on: ubuntu-latest
-    timeout-minutes: 350 # 最大実行時間（約6時間限界）
+    timeout-minutes: 350 # 最大約6時間のコンテナ維持限界
 
     steps:
     - name: Checkout Repository
@@ -28,7 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-    # 📚 小説執筆自律ループエンジンの実行
+    # 📚 小説執筆自律ループランナーの実行
     - name: Run KDP Novel Loop Agent
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
