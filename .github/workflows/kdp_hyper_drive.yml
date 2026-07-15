@@ -3,19 +3,19 @@ name: 📚 KDP Publisher Hyper-Drive Loop
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
+
 on:
   schedule:
-    # 毎時0分に起動して常時コンテナを維持
     - cron: '0 * * * *'
-  workflow_dispatch: # 手動即時起動ボタン
+  workflow_dispatch:
 
 permissions:
-  contents: write # 成果物の自動コミット・プッシュ権限
+  contents: write
 
 jobs:
   run-kdp-limitless:
     runs-on: ubuntu-latest
-    timeout-minutes: 350 # 最大約6時間のコンテナ維持限界
+    timeout-minutes: 350
 
     steps:
     - name: Checkout Repository
@@ -29,13 +29,15 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests
+        pip install requests crewai langchain-google-genai
 
-    # 📚 小説執筆自律ループランナーの実行
     - name: Run KDP Novel Loop Agent
       env:
+        # API Keyの認識漏れを防ぐため、システム上の変数名を補強
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
+        API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
       run: |
         echo "=== 📚 KDP小説自律執筆ハイパードライブ 起動 ==="
         python kdp_novels/agents/kdp_loop_runner.py
+
 
