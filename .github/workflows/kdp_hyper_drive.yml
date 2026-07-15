@@ -33,9 +33,9 @@ jobs:
 
     - name: Run KDP Novel Loop Agent
       env:
-        # API Keyの認識漏れを防ぐため、システム上の変数名を補強
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
-        API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
+        # 会長から教えていただいた正しいAPIキー名（GitHub Secretsに登録されている名前）
+        GEMINI_API_KEY: ${{ secrets.KDP_GEMINI_API_KEY }}
+        API_KEY: ${{ secrets.KDP_GEMINI_API_KEY }}
       run: |
         echo "=== 📚 KDP小説自律執筆ハイパードライブ 起動 ==="
         python kdp_novels/agents/kdp_loop_runner.py
