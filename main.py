@@ -151,12 +151,11 @@ Write at least 500-800 words of high-quality storytelling. Proceed naturally fro
         return True
 
 def main():
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        api_key = os.getenv("API_KEY")
+    # 🔑 KDP専用の唯一のAPIキー環境変数（KDP_GEMINI_API_KEY）のみを取得します
+    api_key = os.getenv("KDP_GEMINI_API_KEY")
         
     if not api_key:
-        print("❌ APIキーが取得できません。環境変数を確認してください。")
+        print("❌ APIキーが取得できません。環境変数 KDP_GEMINI_API_KEY を確認してください。")
         sys.exit(1)
 
     system = KDPNovelMasterSystem(api_key=api_key)
