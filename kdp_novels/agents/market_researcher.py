@@ -1,13 +1,23 @@
 import os
+import sys
 import requests
+
+WORKSPACE_DIR = "kdp_novels/workspace"
+REPORT_FILE = os.path.join(WORKSPACE_DIR, "01_market_report.md")
 
 def run_research():
     print("🕵️‍♂️ [KDP Research Dept] Starting global market trend search for Amazon.com...")
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        print("⚠️ API Key not found. Generating default global market report...")
-        write_demo_report()
+    
+    # 🛡️ 【API節約ガード】すでに本日のレポートがあるなら、1文字もAPIを叩かずに即終了！
+    if os.path.exists(REPORT_FILE):
+        print(f"📊 [資産保護] すでに市場調査データ（{REPORT_FILE}）が存在します。既存の資産を再利用するため、本日のタスクはここで完了します（API課金 ¥0）。")
         return
+
+    # 🔑 環境変数は一貫して「KDP_GEMINI_API_KEY」に統一
+    api_key = os.environ.get("KDP_GEMINI_API_KEY")
+    if not api_key:
+        print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。処理を中断します。")
+        sys.exit(1) # デモデータで誤魔化さず、エラーを検知させるために異常終了させる
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     
@@ -24,32 +34,28 @@ def run_research():
 
     try:
         response = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=60)
+        
+        # 429（レートリミット）などのエラーを明示的にキャッチ
+        if response.status_code == 429:
+            print("⚠️ [API制限] Google APIのリクエスト上限(429)に達しました。時間を空けて再試行してください。")
+            sys.exit(1)
+            
         if response.status_code == 200:
             result = response.json()["candidates"][0]["content"]["parts"][0]["text"]
             save_workspace("01_market_report.md", result)
             print("✅ Global market research report generated successfully.")
         else:
-            write_demo_report()
+            print(f"❌ [APIエラー] ステータスコード: {response.status_code} - {response.text}")
+            sys.exit(1)
+            
     except Exception as e:
-        print(f"Error during research API call: {e}")
-        write_demo_report()
+        print(f"❌ [通信エラー] API呼び出し中に例外が発生しました: {e}")
+        sys.exit(1)
 
 def save_workspace(filename, content):
-    os.makedirs("kdp_novels/workspace", exist_ok=True)
-    with open(f"kdp_novels/workspace/{filename}", "w", encoding="utf-8") as f:
+    os.makedirs(WORKSPACE_DIR, exist_ok=True)
+    with open(os.path.join(WORKSPACE_DIR, filename), "w", encoding="utf-8") as f:
         f.write(content)
-
-def write_demo_report():
-    demo = """# 📊 Global Underserved Niche Research Report
-## 日本語エグゼクティブサマリー
-英語圏のAmazon.comにおいて、現在「BookTok」等で爆発的な需要があるにもかかわらず、既存の作品数が追いついていない3つの超ニッチジャンルを特定しました。
-今回は、最もKindle Unlimitedで爆発しやすい 'Reject Werewolf Romance with a Second Chance'（拒絶された人狼ロマンスと二度目のチャンス） に焦点を絞り、オリジナルの作品を展開します。
-
-## 1. Chosen Genre: Paranormal Romance (Werewolf/Shifter)
-- **Trope:** Rejected Mate & Second Chance.
-- **Why underserved:** Readers crave intense emotional angst where the female lead is rejected by her fated Alpha mate but returns stronger, finding a second-chance bond that drives the original rejector mad with jealousy.
-"""
-    save_workspace("01_market_report.md", demo)
 
 if __name__ == "__main__":
     run_research()
