@@ -1,20 +1,32 @@
 import os
+import sys
 import requests
+
+WORKSPACE_DIR = "kdp_novels/workspace"
+REPORT_FILE = os.path.join(WORKSPACE_DIR, "01_market_report.md")
+BLUEPRINT_FILE = os.path.join(WORKSPACE_DIR, "02_plot_blueprint.md")
 
 def run_plot_design():
     print("📐 [KDP Plot Design Dept] Generating global character profile and Save the Cat outline...")
-    api_key = os.environ.get("GEMINI_API_KEY")
     
-    report_path = "kdp_novels/workspace/01_market_report.md"
-    market_context = ""
-    if os.path.exists(report_path):
-        with open(report_path, "r", encoding="utf-8") as f:
-            market_context = f.read()
-
-    if not api_key:
-        print("⚠️ API Key not found. Generating default global blueprint...")
-        write_demo_blueprint()
+    # 🛡️ 【API節約ガード】すでにプロット設計図があるなら、1文字もAPIを叩かずに即終了！
+    if os.path.exists(BLUEPRINT_FILE):
+        print(f"📐 [資産保護] すでにプロット設計図（{BLUEPRINT_FILE}）が存在します。既存の資産を再利用するため、即時退勤します（API課金 ¥0）。")
         return
+
+    # 🔗 【バトンチェック】前段の市場調査レポートがあるか確認
+    if not os.path.exists(REPORT_FILE):
+        print(f"❌ [組織連携エラー] 前段の市場調査レポート（{REPORT_FILE}）が見つかりません。リレーを中断します。")
+        sys.exit(1)
+
+    with open(REPORT_FILE, "r", encoding="utf-8") as f:
+        market_context = f.read()
+
+    # 🔑 環境変数は一貫して「KDP_GEMINI_API_KEY」に統一
+    api_key = os.environ.get("KDP_GEMINI_API_KEY")
+    if not api_key:
+        print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。処理を中断します。")
+        sys.exit(1)
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     
@@ -33,29 +45,25 @@ The entire output must be in English.
 
     try:
         response = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=60)
+        
+        if response.status_code == 429:
+            print("⚠️ [API制限] Google APIのリクエスト上限(429)に達しました。")
+            sys.exit(1)
+            
         if response.status_code == 200:
             result = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-            with open("kdp_novels/workspace/02_plot_blueprint.md", "w", encoding="utf-8") as f:
+            
+            os.makedirs(WORKSPACE_DIR, exist_ok=True)
+            with open(BLUEPRINT_FILE, "w", encoding="utf-8") as f:
                 f.write(result)
             print("✅ Global blueprint and Save the Cat outline successfully generated.")
         else:
-            write_demo_blueprint()
+            print(f"❌ [APIエラー] ステータスコード: {response.status_code} - {response.text}")
+            sys.exit(1)
+            
     except Exception as e:
-        print(f"Error during plot design API call: {e}")
-        write_demo_blueprint()
-
-def write_demo_blueprint():
-    demo = """# 📐 Global Novel Blueprint & Character Profile
-## Selected Niche: Rejected Mate Werewolf Romance
-## Chosen Ending: 'The Alpha's Regret' (Intense emotional payoff/Second chance romance)
-## Major Characters:
-- **Elena Vance (19):** Slender, emerald eyes, silver-streaked dark hair. Hidden ancient bloodline. Fierce but deeply scarred by her pack's betrayal.
-- **Alpha Nicholas (27):** Domineering, ruggedly handsome, eyes like molten gold. Cold and ruthless, but secretly harboring extreme regret.
-## Save the Cat 15-Beat Outline:
-- Chapter 1: The Opening Image (Elena's suffering) & Theme Stated...
-"""
-    with open("kdp_novels/workspace/02_plot_blueprint.md", "w", encoding="utf-8") as f:
-        f.write(demo)
+        print(f"❌ [通信エラー] API呼び出し中に例外が発生しました: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     run_plot_design()
