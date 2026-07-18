@@ -1,30 +1,67 @@
 import os
+import sys
+import glob
+import re
 import requests
+
+WORKSPACE_DIR = "kdp_novels/workspace"
+SEO_FILE = os.path.join(WORKSPACE_DIR, "04_kdp_seo_meta.md")
+
+def find_latest_chapter():
+    """📁 現在フォルダ内にある最新の章番号を特定する"""
+    search_pattern = os.path.join(WORKSPACE_DIR, "03_novel_manuscript_chapter_*.md")
+    files = glob.glob(search_pattern)
+    
+    max_chapter = 0
+    for file in files:
+        match = re.search(r'chapter_(\d+)\.md', file)
+        if match:
+            max_chapter = max(max_chapter, int(match.group(1)))
+    return max_chapter
 
 def run_compliance_check():
     print("🛡️ [KDP Legal & Compliance Dept] Executing strict copyright and Amazon KDP policy audit...")
-    api_key = os.environ.get("GEMINI_API_KEY")
     
-    # 執筆された原稿とSEOデータを読み込む
-    manuscript_path = "kdp_novels/workspace/03_novel_manuscript.md"
-    seo_path = "kdp_novels/workspace/04_kdp_seo_meta.md"
+    # 🔢 最新の章番号を取得
+    latest_chapter = find_latest_chapter()
     
+    # レポートの保存名を章ごとに動的変更
+    if latest_chapter > 0:
+        REPORT_FILE = os.path.join(WORKSPACE_DIR, f"05_legal_compliance_report_chapter_{latest_chapter}.md")
+        manuscript_path = os.path.join(WORKSPACE_DIR, f"03_novel_manuscript_chapter_{latest_chapter}.md")
+    else:
+        # フォールバック（古い形式のファイルが存在する場合）
+        REPORT_FILE = os.path.join(WORKSPACE_DIR, "05_legal_compliance_report.md")
+        manuscript_path = os.path.join(WORKSPACE_DIR, "03_novel_manuscript.md")
+
+    # 🛡️ 【API節約ガード】この最新章の監査レポートがすでにあるなら、APIを叩かずに即終了！
+    if os.path.exists(REPORT_FILE):
+        print(f"🛡️ [資産保護] 最新のChapter {latest_chapter} はすでに監査済みです（{REPORT_FILE}）。即時退勤します（API課金 ¥0）。")
+        return
+
+    # 🔗 【バトンチェック】監査対象のファイルが物理的に存在するか確認
     context = ""
     if os.path.exists(manuscript_path):
         with open(manuscript_path, "r", encoding="utf-8") as f:
-            context += f"--- MANUSCRIPT ---\n{f.read()}\n"
-    if os.path.exists(seo_path):
-        with open(seo_path, "r", encoding="utf-8") as f:
+            context += f"--- MANUSCRIPT (Chapter {latest_chapter}) ---\n{f.read()}\n"
+    
+    # SEOデータは最初の1回、または最新章とセットで確認
+    if os.path.exists(SEO_FILE):
+        with open(SEO_FILE, "r", encoding="utf-8") as f:
             context += f"--- SEO META DATA ---\n{f.read()}\n"
 
+    if not context:
+        print("❌ [組織連携エラー] 監査すべき原稿データまたはSEOデータが一切見つかりません。処理を中断します。")
+        sys.exit(1)
+
+    # 🔑 環境変数は一貫して「KDP_GEMINI_API_KEY」に統一
+    api_key = os.environ.get("KDP_GEMINI_API_KEY")
     if not api_key:
-        print("⚠️ API Key not found. Generating default compliance report...")
-        write_demo_compliance()
-        return
+        print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。")
+        sys.exit(1)
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     
-    # Amazon KDPのBAN基準・著作権を厳格に監査するためのプロンプト
     prompt = f"""
 You are the Chief Legal Officer and Amazon KDP Compliance Expert for a global publishing company.
 Audit the following novel manuscript and SEO metadata to ensure 100% safety against Amazon KDP bans, copyright strikes, and trademark infringements.
@@ -42,35 +79,25 @@ Output the entire report in English, but add a brief Japanese Executive Summary 
 
     try:
         response = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=60)
+        
+        if response.status_code == 429:
+            print("⚠️ [API制限] Google APIのリクエスト上限(429)に達しました。")
+            sys.exit(1)
+            
         if response.status_code == 200:
             result = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-            os.makedirs("kdp_novels/workspace", exist_ok=True)
-            with open("kdp_novels/workspace/05_legal_compliance_report.md", "w", encoding="utf-8") as f:
+            
+            os.makedirs(WORKSPACE_DIR, exist_ok=True)
+            with open(REPORT_FILE, "w", encoding="utf-8") as f:
                 f.write(result)
-            print("✅ Legal and compliance audit complete. Report saved.")
+            print(f"✅ Legal and compliance audit complete for Chapter {latest_chapter}. Report saved to {REPORT_FILE}.")
         else:
-            write_demo_compliance()
+            print(f"❌ [APIエラー] ステータスコード: {response.status_code} - {response.text}")
+            sys.exit(1)
+            
     except Exception as e:
-        print(f"Error during compliance API call: {e}")
-        write_demo_compliance()
-
-def write_demo_compliance():
-    demo = """# 🛡️ KDP Legal & Compliance Audit Report
-## 日本語エグゼクティブサマリー
-原稿およびSEOデータの法的監査を実施しました。既存の著作権（他作品のプロットや固有名詞）の侵害リスク、およびAmazon KDPのガイドライン違反（商標ワードの不正利用など）は検出されませんでした。
-本成果物は **【PASS（安全）】** と判定され、Amazon.comへのパブリッシングが安全に行える状態であることを保証します。
-
-## 1. Trademark & Copyright Audit
-- **Result:** PASS
-- **Details:** No trademarked names or direct sentence-level plagiarisms detected.
-
-## 2. Amazon KDP Guideline Alignment
-- **Result:** PASS
-- **Details:** Metadata and keyword structure are within acceptable KDP ranking optimization limits. No keyword-stuffing flags.
-"""
-    os.makedirs("kdp_novels/workspace", exist_ok=True)
-    with open("kdp_novels/workspace/05_legal_compliance_report.md", "w", encoding="utf-8") as f:
-        f.write(demo)
+        print(f"❌ [通信エラー] 監査API呼び出し中に例外が発生しました: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     run_compliance_check()
