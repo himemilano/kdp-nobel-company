@@ -19,7 +19,7 @@ def run_research():
         print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。処理を中断します。")
         sys.exit(1) # デモデータで誤魔化さず、エラーを検知させるために異常終了させる
 
-    url = f""https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}"
     
     prompt = (
         "Identify the top 3 high-demand, low-competition ultra-niche fiction genres on Amazon.com (US market) right now. "
