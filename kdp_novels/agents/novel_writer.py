@@ -18,7 +18,7 @@ def determine_next_chapter():
         if match:
             max_chapter = max(max_chapter, int(match.group(1)))
             
-    # 旧形式（03_novel_manuscript.md）が残っている場合は1章とみなす
+    # 旧形式（03_novel_manuscript.md）が残っている場合は1章が書き終わっているとみなし、2章へ進む
     if max_chapter == 0 and os.path.exists(os.path.join(WORKSPACE_DIR, "03_novel_manuscript.md")):
         return 2
         
@@ -30,7 +30,6 @@ def get_previous_context(current_chapter):
         return ""
         
     prev_chapter = current_chapter - 1
-    # 旧形式または連番形式のファイルパスを確認
     prev_file = os.path.join(WORKSPACE_DIR, f"03_novel_manuscript_chapter_{prev_chapter}.md")
     if prev_chapter == 1 and os.path.exists(os.path.join(WORKSPACE_DIR, "03_novel_manuscript.md")):
         prev_file = os.path.join(WORKSPACE_DIR, "03_novel_manuscript.md")
@@ -68,6 +67,7 @@ def run_writer():
         print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。")
         sys.exit(1)
 
+    # 🚀 【最新鋭化】安定版 v1 URL ＋ 最新の gemini-2.0-flash をガッチリ指定
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}"
     
     # 🧠 前の章の記憶をサルベージ
