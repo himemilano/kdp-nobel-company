@@ -28,7 +28,7 @@ def run_marketing():
         print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。")
         sys.exit(1)
 
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={api_key}"
     
     # 🌟 人狼固定を排除し、どんなニッチジャンルにも適応するプロンプトへ修正
     prompt = f"""
