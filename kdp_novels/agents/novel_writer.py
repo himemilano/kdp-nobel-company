@@ -62,9 +62,9 @@ def run_writer():
     print(f"✍️ [KDP Writing Dept] Automating Novel Progress... Target: 【Chapter {next_chapter}】")
 
     # 🔑 環境変数チェック
-    api_key = os.environ.get("KDP_GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
     if not api_key:
-        print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。")
+        print("❌ [致命的エラー] 環境変数 GEMINI_API_KEY_KDP_NOBEL が設定されていません。")
         sys.exit(1)
 
     # 🚀 【最新鋭化】安定版 v1 URL ＋ 最新の gemini-2.0-flash をガッチリ指定
