@@ -13,8 +13,8 @@ def run_research():
         print(f"📊 [資産保護] すでに市場調査データ（{REPORT_FILE}）が存在します。既存の資産を再利用するため、本日のタスクはここで完了します（API課金 ¥0）。")
         return
 
-    # 🔑 環境変数は一貫して「KDP_GEMINI_API_KEY」に統一
-    api_key = os.environ.get("KDP_GEMINI_API_KEY")
+    # 🔑 環境変数は一貫して「GEMINI_API_KEY_KDP_NOBEL」に統一
+    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
     if not api_key:
         print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。処理を中断します。")
         sys.exit(1) # デモデータで誤魔化さず、エラーを検知させるために異常終了させる
