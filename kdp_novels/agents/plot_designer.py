@@ -22,8 +22,8 @@ def run_plot_design():
     with open(REPORT_FILE, "r", encoding="utf-8") as f:
         market_context = f.read()
 
-    # 🔑 環境変数は一貫して「KDP_GEMINI_API_KEY」に統一
-    api_key = os.environ.get("KDP_GEMINI_API_KEY")
+    # 🔑 環境変数は一貫して「GEMINI_API_KEY_KDP_NOBEL」に統一
+    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
     if not api_key:
         print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。処理を中断します。")
         sys.exit(1)
