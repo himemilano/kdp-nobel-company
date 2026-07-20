@@ -30,7 +30,7 @@ jobs:
     - name: Run KDP Master System
       env:
         # 社長（main.py）が求めている名前に書き換え
-        KDP_GEMINI_API_KEY: ${{ secrets.KDP_GEMINI_API_KEY }}
+        GEMINI_API_KEY_KDP_NOBEL: ${{ secrets.GEMINI_API_KEY_KDP_NOBEL }}
       run: python main.py
 
     - name: Commit and Push Progress
