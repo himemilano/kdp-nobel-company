@@ -6,9 +6,9 @@ def main():
     print("🚀 [KDP Project Central] 統括システム（社長）を起動します...")
 
     # 🔑 【最終防衛ライン】環境変数の存在チェック
-    api_key = os.environ.get("KDP_GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
     if not api_key:
-        print("\n❌ [社長の激怒] 環境変数 'KDP_GEMINI_API_KEY' が設定されていません！")
+        print("\n❌ [社長の激怒] 環境変数 'GEMINI_API_KEY_KDP_NOBEL' が設定されていません！")
         print("GitHub ActionsのSecrets、またはローカルの環境変数を確認してください。")
         print("安全のため、全マシーンの稼働を強制停止します。")
         sys.exit(1)
