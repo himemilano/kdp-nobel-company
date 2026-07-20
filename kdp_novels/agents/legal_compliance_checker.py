@@ -54,10 +54,10 @@ def run_compliance_check():
         print("❌ [組織連携エラー] 監査すべき原稿データまたはSEOデータが一切見つかりません。処理を中断します。")
         sys.exit(1)
 
-    # 🔑 環境変数は一貫して「KDP_GEMINI_API_KEY」に統一
-    api_key = os.environ.get("KDP_GEMINI_API_KEY")
+    # 🔑 環境変数は一貫して「GEMINI_API_KEY_KDP_NOBEL」に統一
+    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
     if not api_key:
-        print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。")
+        print("❌ [致命的エラー] 環境変数 GEMINI_API_KEY_KDP_NOBEL が設定されていません。")
         sys.exit(1)
 
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={api_key}"
