@@ -1,8 +1,6 @@
 import os
 import sys
-import json
 import requests
-import re
 
 # API設定
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY_MEDIA")
@@ -10,7 +8,7 @@ BASE_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash
 
 def ask_gemini(prompt, system_instruction=""):
     if not GEMINI_API_KEY:
-        print("❌ 錯誤: GEMINI_API_KEY_MEDIA が設定されていません。")
+        print("❌ エラー: GEMINI_API_KEY_MEDIA が設定されていません。")
         return None
     headers = {"Content-Type": "application/json"}
     combined_prompt = f"[Role Instruction]\n{system_instruction}\n\n[Task]\n{prompt}" if system_instruction else prompt
@@ -37,10 +35,10 @@ def save_file(path, content):
 def run_rewrite_pipeline(target_chapter_num=2):
     print(f"🐺 [KDP Novel Engine] 第{target_chapter_num}章 リライト・自動矯正モード起動")
     
-    # 1. ナレッジと原稿のロード
+    # 1. ナレッジと原稿のロード（.md形式に対応）
     genre_rules = load_file("knowledge/genre_rules.md")
     reviews_log = load_file("knowledge/chapter_reviews_log.md")
-    chapter_path = f"chapters/chapter_{target_chapter_num:02d}.txt"
+    chapter_path = f"chapters/chapter_{target_chapter_num:02d}.md"
     original_text = load_file(chapter_path)
     
     if not original_text:
@@ -79,17 +77,16 @@ def run_rewrite_pipeline(target_chapter_num=2):
         print("❌ リライトの生成に失敗しました。")
         return False
 
-    # 3. 成果物の保存
-    backup_path = f"chapters/chapter_{target_chapter_num:02d}_backup.txt"
-    save_file(backup_path, original_text) # 念のため元のバックアップを作成
-    save_file(chapter_path, revised_text)
+    # 3. 成果物の保存（.md形式に対応）
+    backup_path = f"chapters/chapter_{target_chapter_num:02d}_backup.md"
+    save_file(backup_path, original_text)  # 元の原稿のバックアップ
+    save_file(chapter_path, revised_text)  # リライト版を上書き保存
     
     print(f"✅ 第{target_chapter_num}章のリライトが完了し、{chapter_path} に保存されました！")
     print(f"📁 元の原稿は {backup_path} にバックアップされています。")
     return True
 
 if __name__ == "__main__":
-    # デフォルトで第2章をテスト対象として実行
     success = run_rewrite_pipeline(target_chapter_num=2)
     if not success:
         sys.exit(1)
