@@ -29,9 +29,12 @@ jobs:
 
     - name: Run KDP Master System
       env:
-        # 社長（main.py）が求めている名前に書き換え
+        # Python側（main.py）と名前を完全一致させる
         GEMINI_API_KEY_KDP_NOBEL: ${{ secrets.GEMINI_API_KEY_KDP_NOBEL }}
-      run: python main.py
+      run: |
+        # ディレクトリを移動して実行（相対パスのナレッジや章ファイルを正しく読み込ませるため）
+        cd channels/kdp_novel
+        python main.py
 
     - name: Commit and Push Progress
       run: |
