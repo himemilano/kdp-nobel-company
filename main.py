@@ -1,92 +1,99 @@
 import os
-import sys
-import requests
+import glob
+from agents.plot_designer import PlotDesignerAgent
+from agents.novel_writer import NovelWriterAgent
+from agents.chief_editor import ChiefEditorAgent
+from agents.legal_compliance_checker import LegalComplianceCheckerAgent
+from agents.market_researcher import MarketResearcherAgent
 
-# API設定
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY_MEDIA")
-BASE_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+def get_next_chapter_number():
+    chapters = glob.glob("chapters/chapter_*.md")
+    if not chapters:
+        return 1
+    nums = []
+    for c in chapters:
+        try:
+            num = int(os.path.basename(c).replace("chapter_", "").replace(".md", ""))
+            nums.append(num)
+        except ValueError:
+            continue
+    return max(nums) + 1 if nums else 1
 
-def ask_gemini(prompt, system_instruction=""):
-    if not GEMINI_API_KEY:
-        print("❌ エラー: GEMINI_API_KEY_MEDIA が設定されていません。")
-        return None
-    headers = {"Content-Type": "application/json"}
-    combined_prompt = f"[Role Instruction]\n{system_instruction}\n\n[Task]\n{prompt}" if system_instruction else prompt
-    payload = {"contents": [{"parts": [{"text": combined_prompt}]}]}
-    url = f"{BASE_URL}?key={GEMINI_API_KEY}"
-    try:
-        res = requests.post(url, headers=headers, json=payload, timeout=120)
-        if res.status_code == 200:
-            return res.json()["candidates"][0]["content"]["parts"][0]["text"]
-    except Exception as e:
-        print(f"Gemini API Error: {e}")
-    return None
+def main():
+    print("🤖 [KDP自律統括部] システム起動: パイプラインを実行します...")
+    
+    # APIキー確認
+    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY_KDP_NOBEL environment variable is missing.")
 
-def load_file(path):
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-    return ""
+    chapter_num = get_next_chapter_number()
+    print(f"📖 ターゲット: 第 {chapter_num} 章の制作を開始します。")
 
-def save_file(path, content):
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(content)
+    # 1. 蓄積されたレビューログとワークスペースの読み込み
+    reviews_log_path = "knowledge/chapter_reviews_log.md"
+    previous_logs = ""
+    if os.path.exists(reviews_log_path):
+        with open(reviews_log_path, "r", encoding="utf-8") as f:
+            previous_logs = f.read()
 
-def run_rewrite_pipeline(target_chapter_num=2):
-    print(f"🐺 [KDP Novel Engine] 第{target_chapter_num}章 リライト・自動矯正モード起動")
-    
-    # 1. ナレッジと原稿のロード（.md形式に対応）
-    genre_rules = load_file("knowledge/genre_rules.md")
-    reviews_log = load_file("knowledge/chapter_reviews_log.md")
-    chapter_path = f"chapters/chapter_{target_chapter_num:02d}.md"
-    original_text = load_file(chapter_path)
-    
-    if not original_text:
-        print(f"❌ 対象の章ファイルが見つかりません: {chapter_path}")
-        return False
+    blueprint_path = "workspace/02_plot_blueprint.md"
+    blueprint_context = ""
+    if os.path.exists(blueprint_path):
+        with open(blueprint_path, "r", encoding="utf-8") as f:
+            blueprint_context = f.read()
 
-    # 2. プロンプトの構築（ナレッジを完全にインジェクト）
-    system_instruction = (
-        "You are an expert Chief Editor and bestselling author of KDP Werewolf Romance novels. "
-        "Your task is to rewrite and elevate the given chapter based strictly on the provided Genre Rules and Previous Review Feedback. "
-        "Ensure new facts, an active incident, and a strong cliffhanger are included, while eliminating emotional repetition."
-    )
-    
-    prompt = f"""
-    [Genre Rules & Standards]
-    {genre_rules}
-    
-    [Previous Review Feedback & Mistakes to Avoid]
-    {reviews_log}
-    
-    [Original Draft of Chapter {target_chapter_num}]
-    {original_text}
-    
-    [Instructions]
-    Rewrite this chapter in English to fully address all review feedback. 
-    - Make sure the plot moves forward (add an incident/new info, such as Rafe's overheard conversation).
-    - Fix any logic gaps, pacing issues, or lack of new information.
-    - Keep the high-quality commercial tone of a bestselling Werewolf Romance.
-    - Output ONLY the revised chapter text in English. Do not include conversational filler.
-    """
+    # 2. 各エージェントの初期化
+    plot_agent = PlotDesignerAgent()
+    writer_agent = NovelWriterAgent()
+    editor_agent = ChiefEditorAgent()
+    compliance_agent = LegalComplianceCheckerAgent()
 
-    print("✍️ AI編集部によるリライトを実行中...")
-    revised_text = ask_gemini(prompt, system_instruction)
-    
-    if not revised_text:
-        print("❌ リライトの生成に失敗しました。")
-        return False
+    # 3. プロット設計
+    print("✍️ [Plot Designer] プロットを設計中（観察ループ排除・血筋活性化）...")
+    plot_blueprint = plot_agent.design_plot(chapter_num, f"{previous_logs}\n\n[Base Blueprint Context]\n{blueprint_context}")
+    if not plot_blueprint:
+        print("❌ プロット設計に失敗しました。")
+        return
 
-    # 3. 成果物の保存（.md形式に対応）
-    backup_path = f"chapters/chapter_{target_chapter_num:02d}_backup.md"
-    save_file(backup_path, original_text)  # 元の原稿のバックアップ
-    save_file(chapter_path, revised_text)  # リライト版を上書き保存
-    
-    print(f"✅ 第{target_chapter_num}章のリライトが完了し、{chapter_path} に保存されました！")
-    print(f"📁 元の原稿は {backup_path} にバックアップされています。")
-    return True
+    # 4. 小説執筆
+    print(f"✍️ [Novel Writer] 第 {chapter_num} 章を執筆中...")
+    chapter_text = writer_agent.write_chapter(chapter_num, plot_blueprint, previous_logs)
+    if not chapter_text:
+        print("❌ 小説の執筆に失敗しました。")
+        return
+
+    # 5. 主任編集者によるダメ出し・レビュー
+    print("🧐 [Chief Editor] 主任編集者が厳格に審査・ダメ出し中...")
+    editor_review = editor_agent.review_chapter(chapter_num, chapter_text, previous_logs)
+
+    # 6. コンプライアンスチェック
+    print("⚖️ [Legal Compliance] リーガルチェックを実行中...")
+    compliance_report = compliance_agent.check_compliance(chapter_text)
+
+    # 7. 成果物を所定のフォルダ（chapters / workspace / knowledge）に保存
+    os.makedirs("chapters", exist_ok=True)
+    os.makedirs("workspace", exist_ok=True)
+    os.makedirs("knowledge", exist_ok=True)
+
+    # 小説本文の保存
+    chapter_file_path = f"chapters/chapter_{chapter_num}.md"
+    with open(chapter_file_path, "w", encoding="utf-8") as f:
+        f.write(f"# Chapter {chapter_num}\n\n{chapter_text}")
+    print(f"💾 小説原稿を保存しました: {chapter_file_path}")
+
+    # コンプライアンス＆編集レポートの保存 (workspace/ に格納)
+    report_file_path = f"workspace/05_legal_compliance_report_chapter_{chapter_num}.md"
+    with open(report_file_path, "w", encoding="utf-8") as f:
+        f.write(f"# Chapter {chapter_num} - Editorial & Compliance Report\n\n## Chief Editor Review\n{editor_review}\n\n## Compliance Report\n{compliance_report}")
+    print(f"💾 編集・法務レポートを保存しました: {report_file_path}")
+
+    # レビューログ（knowledge/chapter_reviews_log.md）へ今回のエディター評価を自動追記
+    with open(reviews_log_path, "a", encoding="utf-8") as f:
+        f.write(f"\n\n## 第{chapter_num}章 主任編集者レビュー\n{editor_review}\n")
+    print(f"💾 レビューログを更新しました: {reviews_log_path}")
+
+    print("🎉 本日のパイプライン処理が正常に完了しました。")
 
 if __name__ == "__main__":
-    success = run_rewrite_pipeline(target_chapter_num=2)
-    if not success:
-        sys.exit(1)
+    main()
