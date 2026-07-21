@@ -1,55 +1,95 @@
 import os
 import sys
-import subprocess
+import json
+import requests
+import re
 
-def main():
-    print("🚀 [KDP Project Central] 統括システム（社長）を起動します...")
+# API設定
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY_MEDIA")
+BASE_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
 
-    # 🔑 【最終防衛ライン】環境変数の存在チェック
-    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
-    if not api_key:
-        print("\n❌ [社長の激怒] 環境変数 'GEMINI_API_KEY_KDP_NOBEL' が設定されていません！")
-        print("GitHub ActionsのSecrets、またはローカルの環境変数を確認してください。")
-        print("安全のため、全マシーンの稼働を強制停止します。")
-        sys.exit(1)
+def ask_gemini(prompt, system_instruction=""):
+    if not GEMINI_API_KEY:
+        print("❌ 錯誤: GEMINI_API_KEY_MEDIA が設定されていません。")
+        return None
+    headers = {"Content-Type": "application/json"}
+    combined_prompt = f"[Role Instruction]\n{system_instruction}\n\n[Task]\n{prompt}" if system_instruction else prompt
+    payload = {"contents": [{"parts": [{"text": combined_prompt}]}]}
+    url = f"{BASE_URL}?key={GEMINI_API_KEY}"
+    try:
+        res = requests.post(url, headers=headers, json=payload, timeout=120)
+        if res.status_code == 200:
+            return res.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+    return None
 
-    # 🏃‍♂️ 【黄金のパイプライン】一本道のリレー順序
-    # ※各スクリプトの配置フォルダ（kdp_novels/agents/）に合わせてパスを設定しています。
-    agents = [
-        ("🕵️‍♂️ 市場調査部門", "kdp_novels/agents/market_researcher.py"),
-        ("📐 プロット設計部門", "kdp_novels/agents/plot_designer.py"),
-        ("💰 SEOマーケティング部門", "kdp_novels/agents/seo_marketer.py"),
-        ("✍️ 小説執筆部門", "kdp_novels/agents/novel_writer.py"),
-        ("🛡️ 法務監査部門", "kdp_novels/agents/legal_compliance_checker.py"),
-    ]
+def load_file(path):
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    return ""
 
-    print("\n--- ⚙️ パイプライン・リレーを開始します（無限ループなし・One-Shot設計） ---")
+def save_file(path, content):
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+def run_rewrite_pipeline(target_chapter_num=2):
+    print(f"🐺 [KDP Novel Engine] 第{target_chapter_num}章 リライト・自動矯正モード起動")
     
-    for index, (name, script_path) in enumerate(agents, 1):
-        print(f"\n▶️ 【Step {index}: {name}】を招集... ({script_path})")
-        
-        # ファイルが物理的に存在するか確認
-        if not os.path.exists(script_path):
-            print(f"❌ [致命的エラー] スクリプトファイルが指定のパスに見つかりません: {script_path}")
-            print("フォルダ構成やファイル名が正しいか確認してください。リレーを中止します。")
-            sys.exit(1)
-            
-        try:
-            # 🛡️ check=True により、子スクリプトの異常終了(sys.exit(1))を確実に検知して例外を発生させる
-            subprocess.run(["python", script_path], check=True)
-            print(f"✨ 【{name}】が正常にタスクを完了、または資産を保護して退勤しました。")
-            
-        except subprocess.CalledProcessError as e:
-            print(f"\n🚨 [緊急停止] 【{name}】の処理中に重大なエラーが発生しました（終了コード: {e.returncode}）。")
-            print("これ以上のAPI代の浪費とファイル破損を防ぐため、ここで全システムを安全に緊急停止します。")
-            print("GitHub Actionsのログを確認し、原因（API制限やコードエラーなど）を特定してください。")
-            sys.exit(1)
+    # 1. ナレッジと原稿のロード
+    genre_rules = load_file("knowledge/genre_rules.md")
+    reviews_log = load_file("knowledge/chapter_reviews_log.md")
+    chapter_path = f"chapters/chapter_{target_chapter_num:02d}.txt"
+    original_text = load_file(chapter_path)
+    
+    if not original_text:
+        print(f"❌ 対象の章ファイルが見つかりません: {chapter_path}")
+        return False
 
-    print("\n==================================================")
-    print("🎉 [ミッション完了] 本日のパブリッシング・リレーがすべて安全に終了しました！")
-    print("成果物は 'kdp_novels/workspace/' を確認してください。")
-    print("お疲れ様でした！次回のスケジュール起動までシステムは完全スリープします（維持費 ¥0）。")
-    print("==================================================")
+    # 2. プロンプトの構築（ナレッジを完全にインジェクト）
+    system_instruction = (
+        "You are an expert Chief Editor and bestselling author of KDP Werewolf Romance novels. "
+        "Your task is to rewrite and elevate the given chapter based strictly on the provided Genre Rules and Previous Review Feedback. "
+        "Ensure new facts, an active incident, and a strong cliffhanger are included, while eliminating emotional repetition."
+    )
+    
+    prompt = f"""
+    [Genre Rules & Standards]
+    {genre_rules}
+    
+    [Previous Review Feedback & Mistakes to Avoid]
+    {reviews_log}
+    
+    [Original Draft of Chapter {target_chapter_num}]
+    {original_text}
+    
+    [Instructions]
+    Rewrite this chapter in English to fully address all review feedback. 
+    - Make sure the plot moves forward (add an incident/new info, such as Rafe's overheard conversation).
+    - Fix any logic gaps, pacing issues, or lack of new information.
+    - Keep the high-quality commercial tone of a bestselling Werewolf Romance.
+    - Output ONLY the revised chapter text in English. Do not include conversational filler.
+    """
+
+    print("✍️ AI編集部によるリライトを実行中...")
+    revised_text = ask_gemini(prompt, system_instruction)
+    
+    if not revised_text:
+        print("❌ リライトの生成に失敗しました。")
+        return False
+
+    # 3. 成果物の保存
+    backup_path = f"chapters/chapter_{target_chapter_num:02d}_backup.txt"
+    save_file(backup_path, original_text) # 念のため元のバックアップを作成
+    save_file(chapter_path, revised_text)
+    
+    print(f"✅ 第{target_chapter_num}章のリライトが完了し、{chapter_path} に保存されました！")
+    print(f"📁 元の原稿は {backup_path} にバックアップされています。")
+    return True
 
 if __name__ == "__main__":
-    main()
+    # デフォルトで第2章をテスト対象として実行
+    success = run_rewrite_pipeline(target_chapter_num=2)
+    if not success:
+        sys.exit(1)
