@@ -1,69 +1,40 @@
 import os
-import sys
 import requests
 
-WORKSPACE_DIR = "kdp_novels/workspace"
-REPORT_FILE = os.path.join(WORKSPACE_DIR, "01_market_report.md")
-BLUEPRINT_FILE = os.path.join(WORKSPACE_DIR, "02_plot_blueprint.md")
+class PlotDesignerAgent:
+    def __init__(self):
+        self.api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
+        self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
 
-def run_plot_design():
-    print("📐 [KDP Plot Design Dept] Generating global character profile and Save the Cat outline...")
-    
-    # 🛡️ 【API節約ガード】すでにプロット設計図があるなら、1文字もAPIを叩かずに即終了！
-    if os.path.exists(BLUEPRINT_FILE):
-        print(f"📐 [資産保護] すでにプロット設計図（{BLUEPRINT_FILE}）が存在します。既存の資産を再利用するため、即時退勤します（API課金 ¥0）。")
-        return
+    def design_plot(self, chapter_num, previous_logs):
+        system_instruction = (
+            "You are an expert Plot Architect for bestselling KDP Werewolf Romance novels. "
+            "Your core rule is to FORBID passive observation loops ('walk into forest -> hunt -> smell Alpha -> reminisce -> resolve'). "
+            "Every chapter plot must feature: 1) Active plot progression, 2) Elena acting as a player (investigating, confronting), "
+            "3) Ancient bloodline activation, and 4) Strong hooks/cliffhangers."
+        )
 
-    # 🔗 【バトンチェック】前段の市場調査レポートがあるか確認
-    if not os.path.exists(REPORT_FILE):
-        print(f"❌ [組織連携エラー] 前段の市場調査レポート（{REPORT_FILE}）が見つかりません。リレーを中断します。")
-        sys.exit(1)
+        prompt = f"""
+        [Previous Review Feedback & Strict Rules]
+        {previous_logs}
 
-    with open(REPORT_FILE, "r", encoding="utf-8") as f:
-        market_context = f.read()
+        [Task]
+        Design a detailed plot blueprint for Chapter {chapter_num}. 
+        Ensure it does NOT repeat the observation loop. Include:
+        - Specific external events or clues (e.g., Serpent mark, treaty violations).
+        - Elena's proactive investigative actions.
+        - Ancient bloodline/ability triggers.
+        - A gripping cliffhanger that forces the reader to open the next chapter.
+        """
 
-    # 🔑 環境変数は一貫して「GEMINI_API_KEY_KDP_NOBEL」に統一
-    api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
-    if not api_key:
-        print("❌ [致命的エラー] 環境変数 KDP_GEMINI_API_KEY が設定されていません。処理を中断します。")
-        sys.exit(1)
-
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={api_key}"
-    
-    prompt = f"""
-Based on the following global market research report:
-{market_context}
-
-Design a completely original, highly addictive fiction project targeting the Amazon.com US market. Do NOT copy any existing examples.
-Generate a comprehensive blueprint containing:
-1. **The Ultimate Ending (10 variants):** Brainstorm 10 different, highly satisfying or mind-blowing endings tailored to this niche. Then, select the most powerful, emotional, or plot-twist ending and explain how it will be fully executed.
-2. **Character Profiles:** Create detailed profiles for the main characters (including physical appearance, inner flaws, desires, and secrets). Ensure they perfectly appeal to the target readers.
-3. **Save the Cat! 15-Beat Storyline:** Create a detailed 15-beat outline of the novel, broken down by chapter. Every beat must build maximum emotional tension and hook the reader to turn the next page.
-
-The entire output must be in English.
-"""
-
-    try:
-        response = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=60)
+        headers = {"Content-Type": "application/json"}
+        payload = {"contents": [{"parts": [{"text": f"[Role]\n{system_instruction}\n\n[Task]\n{prompt}"}]}]}
+        url = f"{self.base_url}?key={self.api_key}"
         
-        if response.status_code == 429:
-            print("⚠️ [API制限] Google APIのリクエスト上限(429)に達しました。")
-            sys.exit(1)
-            
-        if response.status_code == 200:
-            result = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-            
-            os.makedirs(WORKSPACE_DIR, exist_ok=True)
-            with open(BLUEPRINT_FILE, "w", encoding="utf-8") as f:
-                f.write(result)
-            print("✅ Global blueprint and Save the Cat outline successfully generated.")
-        else:
-            print(f"❌ [APIエラー] ステータスコード: {response.status_code} - {response.text}")
-            sys.exit(1)
-            
-    except Exception as e:
-        print(f"❌ [通信エラー] API呼び出し中に例外が発生しました: {e}")
-        sys.exit(1)
-
-if __name__ == "__main__":
-    run_plot_design()
+        try:
+            res = requests.post(url, headers=headers, json=payload, timeout=120)
+            if res.status_code == 200:
+                return res.json()["candidates"][0]["content"]["parts"][0]["text"]
+        except Exception as e:
+            print(f"Plot Designer Error: {e}")
+        return None
