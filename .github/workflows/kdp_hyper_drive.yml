@@ -32,7 +32,8 @@ jobs:
         # Python側（main.py）と名前を完全一致させる
         GEMINI_API_KEY_KDP_NOBEL: ${{ secrets.GEMINI_API_KEY_KDP_NOBEL }}
       run: |
-        # ルート直下にある main.py をそのまま実行する
+        # 整理したフォルダ（channels/kdp_novel）に移動してから実行する
+        cd channels/kdp_novel
         python main.py
 
     - name: Commit and Push Progress
