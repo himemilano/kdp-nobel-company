@@ -5,7 +5,6 @@
 この小説原稿（チャプター11）とSEOメタデータは、Amazon KDPのポリシーにおいて、著作権、商標、およびコンテンツガイドラインに関して概ね安全と判断されます。特に問題はありませんが、AIコンテンツの使用状況に応じて開示が必要であること、また暴力描写の程度については全原稿を通して確認することをお勧めします。総合的には合格です。
 
 ---
-
 ### English Audit Report
 
 **Audit Objective:** To ensure 100% safety against Amazon KDP bans, copyright strikes, and trademark infringements for the provided novel manuscript chapter and SEO metadata.
