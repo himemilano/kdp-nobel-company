@@ -1,13 +1,10 @@
 import os
-from crewai import Agent
+from crewai import Agent, Task, Crew, Process
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 class ChiefEditorAgent:
     def __init__(self):
-        # 環境変数からAPIキーを取得
         api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
-        
-        # Geminiモデルの設定
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             temperature=0.3,
@@ -28,3 +25,35 @@ class ChiefEditorAgent:
             allow_delegation=False
         )
 
+    def review_chapter(self, chapter_num: int, chapter_text: str, previous_logs: str) -> str:
+        """編集長として章の原稿を厳格に審査し、レビュー結果とダメ出しを返す"""
+        agent = self.editor_agent()
+        
+        task = Task(
+            description=f"""
+以下の第 {chapter_num} 章の小説原稿を厳しく審査し、改善点やダメ出し、次章への引き継ぎ事項をまとめてください。
+
+【過去のレビュー・ダメ出し蓄積ログ】
+{previous_logs}
+
+【審査対象の原稿（第 {chapter_num} 章）】
+{chapter_text}
+
+以下の観点から厳格にチェックしてください：
+1. 文脈の飛躍や矛盾がないか
+2. キャラクターの言動にブレがないか
+3. 過去の指摘（表現の修正や伏線の回収など）が反映されているか
+""",
+            expected_output="辛口なダメ出し、良かった点、および次回に活かすべき改善指示のレポート（Markdown形式）",
+            agent=agent
+        )
+
+        crew = Crew(
+            agents=[agent],
+            tasks=[task],
+            process=Process.sequential,
+            verbose=True
+        )
+
+        result = crew.kickoff()
+        return str(result)
