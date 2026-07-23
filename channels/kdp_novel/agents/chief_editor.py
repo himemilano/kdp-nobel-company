@@ -1,12 +1,19 @@
 import os
-from crewai import Agent, Task, Crew, Process
+from crewai import Agent, Task, Crew, Process, LLM
 
 class ChiefEditorAgent:
     def __init__(self):
         # 環境変数からAPIキーを取得
-        self.api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
-        if self.api_key:
-            os.environ["GEMINI_API_KEY"] = self.api_key
+        api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
+        if api_key:
+            os.environ["GEMINI_API_KEY"] = api_key
+        
+        # CrewAI標準のLLMラッパーを使用してモデルとAPIキーを安全に渡す
+        self.llm = LLM(
+            model="gemini/gemini-1.5-flash",
+            temperature=0.3,
+            api_key=api_key
+        )
 
     def editor_agent(self) -> Agent:
         return Agent(
@@ -18,7 +25,7 @@ class ChiefEditorAgent:
 過去の監査結果やナレッジを踏まえ、次の執筆やリライトに向けた的確な「ダメ出しと改善方針」を下すのがあなたの仕事です。""",
             verbose=True,
             memory=True,
-            llm="gemini/gemini-1.5-flash",  # 文字列指定で型エラーを回避
+            llm=self.llm,
             allow_delegation=False
         )
 
