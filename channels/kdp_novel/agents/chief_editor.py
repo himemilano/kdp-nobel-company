@@ -8,9 +8,9 @@ class ChiefEditorAgent:
         if api_key:
             os.environ["GEMINI_API_KEY"] = api_key
         
-        # CrewAI標準のLLMラッパーを使用してモデルとAPIキーを安全に渡す
+        # 2.5-flashに統一
         self.llm = LLM(
-            model="gemini/gemini-1.5-flash",
+            model="gemini/gemini-2.5-flash",
             temperature=0.3,
             api_key=api_key
         )
