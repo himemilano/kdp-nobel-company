@@ -3,7 +3,7 @@ name: 📚 KDP Novel Autonomous Operation (One-Shot)
 on:
   schedule:
     # 毎日 日本時間 9:50, 13:50, 17:50
-    - cron: '50 0,4,8 * * *'
+    #- cron: '50 0,4,8 * * *'
   workflow_dispatch:
 
 permissions:
