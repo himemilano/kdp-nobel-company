@@ -6,6 +6,7 @@ class NovelWriterAgent:
     def __init__(self):
         self.api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
         self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-3.8-flash:generateContent"
+        self.fallback_url = "https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent"
 
     def write_chapter(self, chapter_num, plot_blueprint, previous_logs):
         system_instruction = (
@@ -31,16 +32,16 @@ class NovelWriterAgent:
 
         headers = {"Content-Type": "application/json"}
         payload = {"contents": [{"parts": [{"text": f"[Role]\n{system_instruction}\n\n[Task]\n{prompt}"}]}]}
-        url = f"{self.base_url}?key={self.api_key}"
+        urls = [f"{self.base_url}?key={self.api_key}", f"{self.fallback_url}?key={self.api_key}"]
         
-        for attempt in range(3):
+        for attempt in range(4):
             try:
-                res = requests.post(url, headers=headers, json=payload, timeout=300)
+                res = requests.post(urls[min(attempt // 2, 1)], headers=headers, json=payload, timeout=300)
                 if res.status_code == 200:
                     return res.json()["candidates"][0]["content"]["parts"][0]["text"]
                 print(f"Novel Writer Error: HTTP {res.status_code} {res.text[:200]}")
             except Exception as e:
                 print(f"Novel Writer Error: {e}")
-            if attempt < 2:
+            if attempt < 3:
                 time.sleep(20)
         return None
