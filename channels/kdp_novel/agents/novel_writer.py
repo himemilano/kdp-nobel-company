@@ -4,7 +4,7 @@ import requests
 class NovelWriterAgent:
     def __init__(self):
         self.api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
-        self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+        self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-3.8-flash:generateContent"
 
     def write_chapter(self, chapter_num, plot_blueprint, previous_logs):
         system_instruction = (
@@ -39,4 +39,3 @@ class NovelWriterAgent:
         except Exception as e:
             print(f"Novel Writer Error: {e}")
         return None
-
