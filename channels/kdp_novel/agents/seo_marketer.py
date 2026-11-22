@@ -4,7 +4,7 @@ import requests
 class SeoMarketerAgent:
     def __init__(self):
         self.api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
-        self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+        self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-3.8-flash:generateContent"
 
     def optimize_meta(self, story_summary):
         system_instruction = (
@@ -31,4 +31,3 @@ class SeoMarketerAgent:
         except Exception as e:
             print(f"SEO Marketer Error: {e}")
         return None
-
