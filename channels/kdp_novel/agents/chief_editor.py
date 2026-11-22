@@ -10,7 +10,7 @@ class ChiefEditorAgent:
         
         # 2.5-flashに統一
         self.llm = LLM(
-            model="gemini/gemini-2.5-flash",
+            model="gemini/gemini-3.8-flash",
             temperature=0.3,
             api_key=api_key
         )
