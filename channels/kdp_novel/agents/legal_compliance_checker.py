@@ -25,7 +25,7 @@ class LegalComplianceCheckerAgent:
         url = f"{self.base_url}?key={self.api_key}"
         
         try:
-            res = requests.post(url, headers=headers, json=payload, timeout=120)
+            res = requests.post(url, headers=headers, json=payload, timeout=300)
             if res.status_code == 200:
                 return res.json()["candidates"][0]["content"]["parts"][0]["text"]
         except Exception as e:
