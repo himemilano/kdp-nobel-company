@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 
 class NovelWriterAgent:
@@ -32,10 +33,14 @@ class NovelWriterAgent:
         payload = {"contents": [{"parts": [{"text": f"[Role]\n{system_instruction}\n\n[Task]\n{prompt}"}]}]}
         url = f"{self.base_url}?key={self.api_key}"
         
-        try:
-            res = requests.post(url, headers=headers, json=payload, timeout=120)
-            if res.status_code == 200:
-                return res.json()["candidates"][0]["content"]["parts"][0]["text"]
-        except Exception as e:
-            print(f"Novel Writer Error: {e}")
+        for attempt in range(3):
+            try:
+                res = requests.post(url, headers=headers, json=payload, timeout=300)
+                if res.status_code == 200:
+                    return res.json()["candidates"][0]["content"]["parts"][0]["text"]
+                print(f"Novel Writer Error: HTTP {res.status_code} {res.text[:200]}")
+            except Exception as e:
+                print(f"Novel Writer Error: {e}")
+            if attempt < 2:
+                time.sleep(20)
         return None
