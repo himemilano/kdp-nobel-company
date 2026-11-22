@@ -4,7 +4,7 @@ import requests
 class LegalComplianceCheckerAgent:
     def __init__(self):
         self.api_key = os.environ.get("GEMINI_API_KEY_KDP_NOBEL")
-        self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+        self.base_url = "https://generativelanguage.googleapis.com/v1/models/gemini-3.8-flash:generateContent"
 
     def check_compliance(self, text_content):
         system_instruction = (
@@ -31,4 +31,3 @@ class LegalComplianceCheckerAgent:
         except Exception as e:
             print(f"Compliance Checker Error: {e}")
         return None
-
