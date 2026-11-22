@@ -3,6 +3,10 @@ name: 📚 KDP Novel Autonomous Operation (One-Shot)
 on:
   workflow_dispatch:
 
+concurrency:
+  group: kdp-novel-pipeline
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -39,4 +43,5 @@ jobs:
         git config --local user.name "GitHub Action"
         git add -A
         git commit -m "🤖 [KDP自律統括部] 本日の執筆成果を格納し、定時退勤します ($(date))" || echo "変更なし"
+        git pull --rebase origin main
         git push origin main
