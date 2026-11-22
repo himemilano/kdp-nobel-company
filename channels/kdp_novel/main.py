@@ -1,4 +1,5 @@
 import os
+import sys
 import glob
 from agents.plot_designer import PlotDesignerAgent
 from agents.novel_writer import NovelWriterAgent
@@ -37,6 +38,17 @@ def main():
         with open(reviews_log_path, "r", encoding="utf-8") as f:
             previous_logs = f.read()
 
+
+    # レビューログが肥大化するとAPI応答が制限時間に収まらないため、直近分だけを文脈として渡す
+    def recent_context(text, limit=40000):
+        if len(text) <= limit:
+            return text
+        cut = text[-limit:]
+        idx = cut.find("\n## 第")
+        return cut[idx + 1:] if idx >= 0 else cut
+
+    context_logs = recent_context(previous_logs)
+
     blueprint_path = "workspace/02_plot_blueprint.md"
     blueprint_context = ""
     if os.path.exists(blueprint_path):
@@ -51,21 +63,21 @@ def main():
 
     # 3. プロット設計
     print("✍️ [Plot Designer] プロットを設計中（観察ループ排除・血筋活性化）...")
-    plot_blueprint = plot_agent.design_plot(chapter_num, f"{previous_logs}\n\n[Base Blueprint Context]\n{blueprint_context}")
+    plot_blueprint = plot_agent.design_plot(chapter_num, f"{context_logs}\n\n[Base Blueprint Context]\n{blueprint_context}")
     if not plot_blueprint:
         print("❌ プロット設計に失敗しました。")
-        return
+        sys.exit(1)
 
     # 4. 小説執筆
     print(f"✍️ [Novel Writer] 第 {chapter_num} 章を執筆中...")
-    chapter_text = writer_agent.write_chapter(chapter_num, plot_blueprint, previous_logs)
+    chapter_text = writer_agent.write_chapter(chapter_num, plot_blueprint, context_logs)
     if not chapter_text:
         print("❌ 小説の執筆に失敗しました。")
-        return
+        sys.exit(1)
 
     # 5. 主任編集者によるダメ出し・レビュー
     print("🧐 [Chief Editor] 主任編集者が厳格に審査・ダメ出し中...")
-    editor_review = editor_agent.review_chapter(chapter_num, chapter_text, previous_logs)
+    editor_review = editor_agent.review_chapter(chapter_num, chapter_text, context_logs)
 
     # 6. コンプライアンスチェック
     print("⚖️ [Legal Compliance] リーガルチェックを実行中...")
