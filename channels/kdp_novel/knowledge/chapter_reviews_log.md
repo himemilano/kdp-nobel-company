@@ -1,3 +1,3 @@
-# Chapter Reviews Log — Book 2 (Silver Creek Shifters)
+# Moved
 
-Book 2 production started 2026-11-28. Book 1 reviews are archived under books/book1/knowledge/.
+Book 2 reviews are logged in `books/book2/knowledge/chapter_reviews_log.md`. Book 1 reviews are archived under `books/book1/knowledge/`.

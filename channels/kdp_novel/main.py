@@ -7,8 +7,11 @@ from agents.chief_editor import ChiefEditorAgent
 from agents.legal_compliance_checker import LegalComplianceCheckerAgent
 from agents.market_researcher import MarketResearcherAgent
 
+# 現在制作中の巻のルートフォルダ（巻が変わったらここを書き換える）
+BOOK_ROOT = "books/book2"
+
 def get_next_chapter_number():
-    chapters = glob.glob("chapters/chapter_*.md")
+    chapters = glob.glob(f"{BOOK_ROOT}/chapters/chapter_*.md")
     if not chapters:
         return 1
     nums = []
@@ -32,7 +35,7 @@ def main():
     print(f"📖 ターゲット: 第 {chapter_num} 章の制作を開始します。")
 
     # 1. 蓄積されたレビューログとワークスペースの読み込み
-    reviews_log_path = "knowledge/chapter_reviews_log.md"
+    reviews_log_path = f"{BOOK_ROOT}/knowledge/chapter_reviews_log.md"
     previous_logs = ""
     if os.path.exists(reviews_log_path):
         with open(reviews_log_path, "r", encoding="utf-8") as f:
@@ -49,7 +52,7 @@ def main():
 
     context_logs = recent_context(previous_logs)
 
-    blueprint_path = "workspace/02_plot_blueprint.md"
+    blueprint_path = f"{BOOK_ROOT}/workspace/02_plot_blueprint.md"
     blueprint_context = ""
     if os.path.exists(blueprint_path):
         with open(blueprint_path, "r", encoding="utf-8") as f:
@@ -84,18 +87,18 @@ def main():
     compliance_report = compliance_agent.check_compliance(chapter_text)
 
     # 7. 成果物を所定のフォルダ（chapters / workspace / knowledge）に保存
-    os.makedirs("chapters", exist_ok=True)
-    os.makedirs("workspace", exist_ok=True)
-    os.makedirs("knowledge", exist_ok=True)
+    os.makedirs(f"{BOOK_ROOT}/chapters", exist_ok=True)
+    os.makedirs(f"{BOOK_ROOT}/workspace", exist_ok=True)
+    os.makedirs(f"{BOOK_ROOT}/knowledge", exist_ok=True)
 
     # 小説本文の保存
-    chapter_file_path = f"chapters/chapter_{chapter_num}.md"
+    chapter_file_path = f"{BOOK_ROOT}/chapters/chapter_{chapter_num}.md"
     with open(chapter_file_path, "w", encoding="utf-8") as f:
         f.write(f"# Chapter {chapter_num}\n\n{chapter_text}")
     print(f"💾 小説原稿を保存しました: {chapter_file_path}")
 
     # コンプライアンス＆編集レポートの保存 (workspace/ に格納)
-    report_file_path = f"workspace/05_legal_compliance_report_chapter_{chapter_num}.md"
+    report_file_path = f"{BOOK_ROOT}/workspace/05_legal_compliance_report_chapter_{chapter_num}.md"
     with open(report_file_path, "w", encoding="utf-8") as f:
         f.write(f"# Chapter {chapter_num} - Editorial & Compliance Report\n\n## Chief Editor Review\n{editor_review}\n\n## Compliance Report\n{compliance_report}")
     print(f"💾 編集・法務レポートを保存しました: {report_file_path}")
