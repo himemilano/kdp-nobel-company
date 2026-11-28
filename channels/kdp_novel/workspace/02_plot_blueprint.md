@@ -1,137 +1,101 @@
-# 📐 Finale Blueprint — The Alpha's Regret (Chapters 49–55, FINAL)
+# Plot Blueprint — Silver Creek Shifters Book 2 (seed draft, 2026-11-28)
 
-> This file replaces `workspace/02_plot_blueprint.md`. It is the steering context for
-> generating the closing chapters of Book 1. The original premise is preserved in
-> Section 1. Sections 2–4 are binding instructions for the Plot Designer and the
-> Novel Writer and override any conflicting habit of the pipeline (including the
-> genre-rule cliffhanger requirement, for the final chapters only).
+Working title: **The Alpha's Exile** (alternatives: The Alpha's Vow,
+The Alpha's Thorn — final title is the author's decision before publication)
 
-## 1. Book premise (unchanged)
+This file replaces `workspace/02_plot_blueprint.md` at switch-over. The Plot
+Designer receives it as [Base Blueprint Context] on every run. Keep it
+complete and current; the Book 1 failure mode was a blueprint that never
+reached the repo.
 
-- **Title**: The Alpha's Regret: A Rejected Mate Romance (Silver Creek Shifters Book 1)
-- **Niche**: Rejected Mate Werewolf Romance
-- **Chosen ending**: 'The Alpha's Regret' — intense emotional payoff / second-chance romance
-- **Elena Vance (19)**: slender, emerald eyes, silver-streaked dark hair. Hidden ancient
-  bloodline (First Whisperer). Fierce, deeply scarred by her pack's betrayal.
-- **Alpha Nicholas (27)**: domineering, ruggedly handsome, eyes like molten gold. Cold
-  and ruthless in public; secretly consumed by regret. He rejected Elena publicly to
-  make her worthless in the Serpent Court's eyes and drive her beyond their reach,
-  then searched for her every night (established Ch. 2).
+## 1. Premise
 
-## 2. Where the story stands (end of Chapter 48 — canon)
+Hundreds of leagues south of Silver Creek, beyond the barrier mountains, the
+Ember Hollow pack lives where the world's fabric runs thin and strange. At
+the end of Book 1, one dormant thread in that land trembled. This book is
+that thread waking up.
 
-- Elena's essence is woven into the Loom of Ages; her physical body lies preserved in
-  stasis by the Lifestone (it has kept the True Seed's body since her essence was drawn in).
-- Elena found the Loom's one untouched thread of creation (Ch. 48) and, through the mate
-  bond, guided Nicholas to re-weave the Loom and sever the Elder Serpent God's control.
-  Rafe-Serpent turned to ash; the corrupted legion turned to dust.
-- The re-woven Loom now demands its own price: it craves Nicholas's Alpha life-essence
-  and speaks: *"Heal the Weaver, Alpha. Become its anchor. Or watch your world unravel."*
-- Rafe's soul remnant was freed when his possessed body turned to ash, but it still
-  lingers in pain inside the pattern. The Elder Serpent God's last foothold in the
-  pattern is that pain — its leash on Rafe was its final grip (established Ch. 33).
+**Wren Halloway**, 24, is the pack's shame: at her first-shift ceremony her
+wolf never came, and Alpha **Cassian Vale**, bound by a political betrothal
+negotiation, publicly refused the mate bond the Goddess had marked between
+them, naming her "hollow". Three years later she works the pack's border
+wards — and is the first to feel the southern threads begin to sing, rot,
+and tear. Her gift is the Weaver's sight, dormant in her line since before
+the Ember Hollow pack had a name. When the southern Root begins to wake
+hungry, the only person who can see the pattern is the woman Cassian threw
+away. He has to go to her. She does not have to say yes.
 
-## 3. Hard rules for ALL finale chapters (49–55)
+## 2. Main cast
 
-1. **These are the last chapters of Book 1.** Chapter 55 is the Epilogue. The Plot
-   Designer must not invent chapters beyond 55, and every chapter must move the
-   closing forward — no stalling, no new subplots.
-2. **No new settings, powers, entities, artifacts, peoples, or named concepts.**
-   Only established elements may be used: the Loom of Ages, the pristine thread of
-   creation, the Seed-Crystal, the Lifestone, The Root, the Guardian, the mate bond,
-   the pack bond, Rafe's soul remnant, Elena's bloodline, Nicholas's Alpha bond.
-3. **No escalation.** No enemy becomes stronger; no new threat appears. The Elder
-   Serpent God's remnant makes its final attempt in Chapter 51 and never returns.
-4. **The romance payoff is mandatory and on-page**: Nicholas's full apology and the
-   truth about the rejection (Ch. 52), the mate bond restored by Elena's free choice
-   (Ch. 52), the public undoing of the rejection before the pack (Ch. 53).
-5. **Rafe's arc closes**: forgiven and released (Ch. 50), memorialised (Ch. 53).
-   He is never resurrected, possessed, or brought back again.
-6. **Cliffhanger override**: Chapters 49–51 may end on hooks. Chapters 52–55 must end
-   in resolution. The Epilogue ends in peace — no hook, no new danger.
-7. **Form**: third person, alternating Elena/Nicholas focus as in recent chapters,
-   ~1,000–1,300 words per chapter (Epilogue ~600–800). Match the existing prose voice.
-8. **Elena returns to her physical body in Chapter 52** and stays physical. No
-   essence-only chapters after Chapter 51.
+- **Wren Halloway** — heroine. Dormant wolf, awakening Weaver's sight.
+  Quiet, dry humour, keeps accounts of every slight. Arc: from "hollow" to
+  the pack's indispensable seer — on her own terms.
+- **Cassian Vale** — Alpha of Ember Hollow. Rejected Wren to secure a
+  border alliance with the Greyford pack; the alliance is rotting from
+  inside. Arc: grovel with actions, not speeches; must give up control
+  publicly before he can be chosen.
+- **Sera Greyford** — Cassian's political betrothed. Not a villain: a
+  capable leader whose own pack is the source of the corruption vector.
+  Her choice in Act 3 decides the war.
+- **Old Maera** — border-ward keeper, Wren's mentor; carries the southern
+  memory of the Loom. Dies or is taken in Act 3 (pay off her Act 1 warnings).
+- **Elena & Nicholas (Book 1)** — legends in the south. One mid-book contact
+  (a letter, then a short visit by a messenger or by Elena herself in Act 3)
+  confirms the pattern is the same war, one valley wider. Cameo only.
 
-## 4. Chapter-by-chapter design
+## 3. Structure (~52 chapters, ~55,000 words)
 
-### Chapter 49 — "The Refusal"
-Nicholas refuses the Loom's bargain as stated: he will not become its anchor on its
-terms, and he will not buy the world's safety with Elena's freedom. To buy time he
-lets the binding begin on himself — the Loom's threads start to take his essence.
-Inside, Elena follows the pristine thread of creation to the Loom's oldest pattern
-and learns the truth the wound hid: **the Loom was never meant to hold one living
-anchor. It was anchored by the First Whisperer's line freely, renewed by choice —
-a bond, not a chain.** The hunger began when the line was broken. She reaches the
-thread and, for the first time, the Loom's true will answers her — not with hunger,
-but with grief. *Hook: it shows her the moment the line broke — and it is not ancient.
-It is the night of her rejection.*
+- **Act 1 — The Hollow Girl (Ch. 1–12).** The rejection, retold once from
+  Wren's side (Ch. 1 mirrors Book 1 Ch. 1's ceremony-gone-wrong). Three
+  years on: border wards failing, threads singing wrong. Wren hides her
+  sight. Climax: a ward collapses on a patrol; Wren saves them openly.
+- **Act 2 — The Alpha's Need (Ch. 13–26).** Cassian must ask for her help;
+  forced proximity as she re-weaves the border. Grovel by deed: he returns
+  her family's seized cottage, stands down his own council for her.
+  Sera arrives to inspect her betrothal. Climax: the southern Root shows
+  Wren a pattern with her own thread cut out of it — someone is editing
+  the weave.
+- **Act 3 — The Southern Root (Ch. 27–40).** The Greyford corruption vector
+  revealed; Maera's warnings pay off; Sera's choice. Elena contact scene.
+  Climax (different place, different stakes from Acts 1–2): the alliance
+  ceremony itself becomes the battlefield — political, public, no cave.
+- **Act 4 — The Choosing (Ch. 41–52).** FINALE RULES APPLY (see §4).
+  The Root is not destroyed but re-rooted: Wren chooses to bind it as a
+  guardian, paying a real price (her wolf's first shift is spent as the
+  binding's fuel — she shifts at last, and gives the moment away for the
+  pack; she will shift again, but the first time is gone). Cassian undoes
+  the rejection publicly at the same ceremony ground, mirroring Book 1's
+  clearing scene without copying it: he kneels, she decides. Epilogue:
+  peace, one quiet thread allowed — far north this time, a thread neither
+  woman has seen before (Book 3 door, threatens nothing now).
 
-### Chapter 50 — "The Weaver's Price"
-Elena speaks with the Loom's true will. The price of healing is restoration of what
-was broken: the line must be restored **by choice on both sides** — she must choose
-to return; Nicholas must ask, not command. While Nicholas weakens under the temporary
-binding, Rafe's soul remnant finds Elena inside the pattern. His pain is the serpent
-god's last foothold. Elena forgives him — he was her friend; the betrayal was the
-possession, not the man — and his soul is released in peace. The foothold tears free.
-*Hook: the Elder Serpent God's remnant, sensing its last grip failing, makes its
-final lunge — through the one crack left: Nicholas's temporary binding.*
+## 4. Finale instructions (binding from Chapter 1 of production)
 
-### Chapter 51 — "The Last Thread"
-The final confrontation, deliberately small and personal. The serpent's remnant tries
-to seize the pristine thread through Nicholas's binding. Elena does not fight it with
-power; she re-weaves with the restored pattern — her own free choice, spoken plainly:
-she chooses Nicholas, the pack, and the world, not because fate bound her, but
-because she wills it. On the outside, Nicholas does the one thing an Alpha never
-does: **he kneels**, and asks — as a man, not a command — for her forgiveness and
-for her to come back. The remnant unravels: the pattern no longer has a wound for it
-to grip. The Loom stills. Nicholas's binding breaks. *Close: Elena's essence loosens
-from the Loom and begins to fall — back toward the body the Lifestone has kept.*
+- FINALE_START = Chapter 49. Chapters 49–52 must resolve: apology in action,
+  the public un-rejecting, the Root re-rooted, the couple chosen freely.
+- The Epilogue (Ch. 52 may serve as epilogue if 51 lands the resolution)
+  ends in peace. No cliffhanger. One quiet series thread maximum (§3 Act 4).
+- No chapter from 49 on may end on a hook, a mid-choice stop, or an
+  unfinished confrontation.
+- Completion is judged by content against this blueprint, never by chapter
+  count alone.
 
-### Chapter 52 — "The Return"
-Elena wakes in her own body, in the Lifestone sanctuary, Nicholas at her side — he
-has not left it. A quiet chapter; the emotional landing of the whole book. He tells
-her everything, holding nothing back: the Serpent Court's threat, the staged
-rejection meant to make her worthless in their eyes, the nights he searched, the
-regret that has eaten him since. He asks for nothing. Elena does not forgive him in
-a rush — she names her one condition: **never decide for her again.** He accepts,
-and proves it: the bond will be restored only if she chooses it; stay or go, the
-choice is hers alone. She chooses — him, and home — on her own terms. The mate bond
-re-forms, different from the first: not fate's chain, but a chosen thread.
-*Close: dawn, and for the first time since the rejection, peace.*
+## 5. Anti-loop and continuity rules
 
-### Chapter 53 — "The Reckoning"
-Silver Creek. Elena returns, and the pack that stood silent at her rejection must
-face her. Elias, freed from the serpent's control but broken by it, confesses his
-part before the pack and accepts exile — the cost of the story's betrayal is paid in
-the open. The pack holds a memorial for Rafe, honoured as the friend he was, not the
-weapon he was made into. Then, in the same sacred clearing where he rejected her,
-Nicholas undoes it publicly: before the whole pack he names Elena his chosen mate
-and the First Whisperer's heir — not his possession, his equal. The pack answers.
-*Close: the clearing that witnessed her exile witnesses her restoration.*
+- No two consecutive chapters may restage the same confrontation, location,
+  or argument. Every chapter must change the situation.
+- Maintain the foreshadowing ledger (§6) — the Plot Designer checks it
+  before designing each chapter; the Chief Editor flags unpaid threads at
+  chapters 20, 35, and 45.
+- Established elements only: the Loom, threads, Roots/Lifestones as
+  guardians-or-predators, Weaver bloodlines. No new magic systems.
 
-### Chapter 54 — "What Remains"
-Loose ends, tied warmly. The corrupted descendants who survived are healed as the
-restored pattern reaches them, or gone beyond harm. The Root, the Lifestone, the
-Guardian rest — guardians again, not predators. Elena takes her place not merely as
-Luna but as the Weaver's Friend, the one the Loom will answer — by choice, never by
-chain. A single quiet series thread is allowed (this is the only permitted hook in
-the closing chapters): far away, in another pack's territory, one thread of the
-pattern trembles — the world is wider than Silver Creek. It threatens nothing now.
-*Close: Elena feels it, smiles, and turns back to the life in front of her.*
+## 6. Foreshadowing ledger (seed)
 
-### Chapter 55 — Epilogue: "What the Loom Remembers"
-Weeks later. Elena stands at the ancient oak where her blood first answered
-(Chapter 1 callback). The oak is calm now; so is she. Nicholas joins her. A short,
-warm scene: ordinary happiness, hard-won — a meal, laughter from the packhouse, his
-hand in hers by her choice and his. Final beat lands the book's theme: **the
-strongest thread is the one chosen freely.** Last line of Book 1. No hook.
-
-## 5. After generation (production notes — not for the agents)
-
-- Chapters 49–55 complete Book 1 at ~55 chapters / ~57,000 words.
-- Then: manuscript binding (all chapters in order, front/back matter), cover,
-  and the existing metadata in `workspace/04_kdp_seo_meta.md`.
-- Book 2, if any, starts from the single quiet thread in Chapter 54 — a new story,
-  not a continuation of this arc.
+| # | Planted | Plant in | Pay off |
+|---|---------|----------|---------|
+| 1 | The dormant southern thread trembles (Book 1 Ch. 54) | Prologue/Ch. 1 | Wren's sight wakes, Act 1 climax |
+| 2 | Maera warns "a woven thing can be edited" | Act 1 | Act 2 climax reveal |
+| 3 | Cassian kept Wren's mother's ward-token | Act 2 | Act 4, returned before the kneeling |
+| 4 | Sera's brother missing on the border | Act 2 | Act 3, he is the corruption's first vessel |
+| 5 | Wren's wolf has never shifted | Ch. 1 | Act 4, the first shift spent as binding fuel |
